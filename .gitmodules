@@ -1,3 +1,6 @@
 [submodule "third_party/async_io_uring"]
 	path = third_party/async_io_uring
 	url = git@github.com:vrischmann/async_io_uring.git
+[submodule "third_party/zig-args"]
+	path = third_party/zig-args
+	url = git@github.com:vrischmann/zig-args.git
