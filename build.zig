@@ -9,6 +9,7 @@ pub fn build(b: *std.build.Builder) void {
     exe.setBuildMode(mode);
     exe.install();
     exe.addPackagePath("async_io_uring", "third_party/async_io_uring/src/async_io_uring.zig");
+    exe.addPackagePath("args", "third_party/zig-args/args.zig");
 
     const run_cmd = exe.run();
     run_cmd.step.dependOn(b.getInstallStep());
