@@ -12,7 +12,7 @@ const AsyncIOUring = @import("async_io_uring").AsyncIOUring;
 
 const max_ring_entries = 512;
 
-fn computeFileHash(ring: *AsyncIOUring, path: [:0]const u8) ![crypto.hash.Sha1.digest_length]u8 {
+fn computeFileHash(ring: *AsyncIOUring, path: [:0]const u8) ![crypto.hash.Blake3.digest_length]u8 {
     const open_cqe = try ring.openat(
         os.linux.AT.FDCWD,
         path,
@@ -36,7 +36,7 @@ fn computeFileHash(ring: *AsyncIOUring, path: [:0]const u8) ![crypto.hash.Sha1.d
 
     // Read and compute hash
 
-    var hasher = crypto.hash.Sha1.init(.{});
+    var hasher = crypto.hash.Blake3.init(.{});
 
     var n: u64 = 0;
     while (n < statx_buf.size) {
@@ -57,7 +57,7 @@ fn computeFileHash(ring: *AsyncIOUring, path: [:0]const u8) ![crypto.hash.Sha1.d
         hasher.update(buf[0..read]);
     }
 
-    var hash: [crypto.hash.Sha1.digest_length]u8 = undefined;
+    var hash: [crypto.hash.Blake3.digest_length]u8 = undefined;
     hasher.final(&hash);
 
     return hash;
