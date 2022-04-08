@@ -1,11 +1,13 @@
 const std = @import("std");
 const crypto = std.crypto;
-const fmt = std.fmt;
 const debug = std.debug;
+const fmt = std.fmt;
+const heap = std.heap;
 const os = std.os;
 
 const IO_Uring = os.linux.IO_Uring;
 
+const argsParser = @import("args");
 const AsyncIOUring = @import("async_io_uring").AsyncIOUring;
 
 const max_ring_entries = 512;
@@ -73,8 +75,23 @@ fn runEventLoop(frame: *@Frame(computeFileHash), file_path: [:0]const u8) !void 
     return async_ring.run_event_loop();
 }
 
-pub fn main() anyerror!void {
-    const file_path = "/home/vincent/Music/Nemophila/NEMOPHILA-REVIVE/01-02-NEMOPHILA-DISSENSION-SMR.flac";
+pub fn main() anyerror!u8 {
+    var gpa = heap.GeneralPurposeAllocator(.{}){};
+    defer if (gpa.deinit()) {
+        debug.panic("leaks detected", .{});
+    };
+    var allocator = gpa.allocator();
+
+    // Parse options
+    const options = try argsParser.parseForCurrentProcess(struct {}, allocator, .print);
+    defer options.deinit();
+
+    if (options.positionals.len < 1) {
+        debug.print("Usage: zig-async_io_uring <path>\n", .{});
+        return 1;
+    }
+
+    const file_path = options.positionals[0];
 
     var file_hash_frame: @Frame(computeFileHash) = undefined;
 
@@ -94,4 +111,6 @@ pub fn main() anyerror!void {
     debug.print("file hash: {s}\n", .{
         fmt.fmtSliceHexLower(&file_hash),
     });
+
+    return 0;
 }
