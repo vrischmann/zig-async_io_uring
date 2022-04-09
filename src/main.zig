@@ -39,10 +39,9 @@ fn computeFileHash(ring: *AsyncIOUring, path: [:0]const u8) ![crypto.hash.Blake3
     var hasher = crypto.hash.Blake3.init(.{});
 
     var n: u64 = 0;
-    while (n < statx_buf.size) {
-        var buf: [4096]u8 = undefined;
-        _ = buf;
+    var buf: [1024 * 1024]u8 = undefined;
 
+    while (n < statx_buf.size) {
         const cqe = try ring.read(
             fd,
             &buf,
