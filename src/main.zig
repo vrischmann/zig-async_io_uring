@@ -67,7 +67,6 @@ fn runEventLoop(frame: *@Frame(computeFileHash), file_path: [:0]const u8) !void 
     defer ring.deinit();
 
     var async_ring = AsyncIOUring{ .ring = &ring };
-    try async_ring.run_event_loop();
 
     frame.* = async computeFileHash(&async_ring, file_path);
 
