@@ -17,7 +17,7 @@ fn computeFileHash(ring: *AsyncIOUring, path: [:0]const u8) ![crypto.hash.Blake3
         os.linux.AT.FDCWD,
         path,
         0,
-        0644,
+        0o644,
         null,
         null,
     );
